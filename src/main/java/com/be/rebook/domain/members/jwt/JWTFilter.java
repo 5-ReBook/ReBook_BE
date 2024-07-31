@@ -3,13 +3,10 @@ package com.be.rebook.domain.members.jwt;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.dto.CustomUserDetails;
 import com.be.rebook.global.exception.ErrorCode;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,11 +16,8 @@ import java.io.IOException;
 
 
 public class JWTFilter extends OncePerRequestFilter {
-    //필터를 검증할 메서드를 가져오려면 JWTUtil을 주입해야함
     private final JWTUtil jwtUtil;
-
-    private static final Logger jwtLogger = LoggerFactory.getLogger(JWTFilter.class);
-
+    private static final String ACCESSTOKEN_HEADER = "Authorization";
 
     public JWTFilter(JWTUtil jwtUtil){
         this.jwtUtil = jwtUtil;
@@ -45,8 +39,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String accessToken = request.getHeader("access");
-        //여기서 액세스 토큰 로깅했었는데 지움
+        String accessToken = request.getHeader(ACCESSTOKEN_HEADER);
 
         if (accessToken == null) {
             //권한이 필요 없는 경우도 있으니까
@@ -54,12 +47,10 @@ public class JWTFilter extends OncePerRequestFilter {
 
             return;
         }
+        accessToken = accessToken.substring(7);
 
         // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
-        try {
-            jwtUtil.isExpired(accessToken);
-        } catch (ExpiredJwtException e) {
-            jwtLogger.info("access token expired");
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(accessToken))){
             //response status code = 401
             //프론트에서 알아야됨
             //EXPIRED_TOKEN
@@ -76,7 +67,6 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        // username, role 값을 획득
         String username = jwtUtil.getUsername(accessToken);
         String role = jwtUtil.getRole(accessToken);
 

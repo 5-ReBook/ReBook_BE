@@ -13,9 +13,6 @@ import com.be.rebook.domain.members.repository.RefreshTokensRepository;
 import com.be.rebook.domain.members.repository.UniversitiesRepository;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
-import io.jsonwebtoken.ExpiredJwtException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +28,6 @@ public class MemberService {
     private final MajorsRepository majorsRepository;
     private final JWTUtil jwtUtil;
 
-    private static final Logger memberServiceLogger = LoggerFactory.getLogger(MemberService.class);
     private final RefreshTokensRepository refreshTokensRepository;
 
     public MemberService(MembersRepository membersRepository,
@@ -46,18 +42,14 @@ public class MemberService {
         this.majorsRepository = majorsRepository;
     }
 
-    //todo : 특문 걸러내는거 inputVerifier에 통합할건지?
     private Boolean checkSpecialCharacters(String input){
-        return input.matches(".*[^a-zA-Z0-9\\uAC00-\\uD7AF].*");
+        return input.matches(".*[^가-힣a-zA-Z0-9].*");
     }
 
     @Transactional
     public Members updateUser(String token, UpdateDTO membersUpdateDTO) {
-        try {
-            jwtUtil.isExpired(token);
-        } catch (ExpiredJwtException e) {
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
             //EXPIRED_TOKEN
-            memberServiceLogger.error("회원 정보 업데이트 오류 : 토큰 만료됨 {}", ErrorCode.EXPIRED_TOKEN);
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
@@ -66,7 +58,6 @@ public class MemberService {
 
         if (Boolean.FALSE.equals(isUsernameExists)){
             //NO_USER_INFO
-            memberServiceLogger.error("회원 정보 업데이트 오류 : 해당 유저 없음, 코드 {}", ErrorCode.NO_USER_INFO);
             throw new BaseException(ErrorCode.NO_USER_INFO);
         }
 
@@ -78,30 +69,18 @@ public class MemberService {
         String nicknameToUpdate = membersUpdateDTO.getNickname();
         String unvToUpdate = membersUpdateDTO.getUniversity();
 
-        if ((nicknameToUpdate != null && checkSpecialCharacters(nicknameToUpdate)) ||
-                (unvToUpdate != null && checkSpecialCharacters(unvToUpdate))) {
-            //BAD_INPUT
-            memberServiceLogger.error("회원 정보 업데이트 오류 : 입력 형식 잘못됨, 코드 {}", ErrorCode.BAD_INPUT);
-            throw new BaseException(ErrorCode.BAD_INPUT);
-        }
-
         if (nicknameToUpdate != null) {
             nickname = membersUpdateDTO.getNickname();
         }
 
-        // string으로 들어온 학교를 universities 테이블에서 조회해서 id값 얻어오고
-        // 그 아이디값 저장
         if (unvToUpdate != null) {
             unvId = universitiesRepository.findByUniversity(unvToUpdate).getUnvId();
         }
 
-        // , 콤마로 전공명,전공명,전공명 이런식으로 들어온 데이터 ,로 나눠서 각 전공명별로 아이디값 조회해서
-        // 멤버 majors 항목에 1,2,3,4,5 식의 스트링으로 저장하기
         String majorsToUpdate = membersUpdateDTO.getMajors();
         if (majorsToUpdate != null){
-            if(majorsToUpdate.matches(".*[^a-zA-Z0-9,\\uAC00-\\uD7AF].*")){
+            if(majorsToUpdate.matches(".*[^a-zA-Z0-9,\\uAC00-\\uD7AF\\u4E00-\\u9FFF ()\\u00B7-].*")){
                 //BAD_INPUT
-                memberServiceLogger.error("회원 정보 업데이트 오류 : 입력 형식 잘못됨, 코드 {}", ErrorCode.BAD_INPUT);
                 throw new BaseException(ErrorCode.BAD_INPUT);
             }
 
@@ -126,11 +105,8 @@ public class MemberService {
     }
 
     public Members deleteUser(String token) {
-        try {
-            jwtUtil.isExpired(token);
-        } catch (ExpiredJwtException e) {
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
             //EXPIRED_TOKEN
-            memberServiceLogger.error("회원 탈퇴 오류 : 토큰 만료됨, 코드: {}", ErrorCode.EXPIRED_TOKEN);
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
@@ -139,7 +115,6 @@ public class MemberService {
 
         if(Boolean.FALSE.equals(isUsernameExists)){
             //NO_USER_INFO
-            memberServiceLogger.error("회원 탈퇴 오류 : 유저 없음, 코드: {}", ErrorCode.NO_USER_INFO);
             throw new BaseException(ErrorCode.NO_USER_INFO);
         }
 
@@ -155,7 +130,6 @@ public class MemberService {
     public List<String> getUniversitiesList(String unvToSearch){
         if(unvToSearch.matches(".*[^가-힣\\sA-Z()].*")){
             //BAD_INPUT
-            memberServiceLogger.error("검색어로 대학 목록 불러오기 오류 : 입력 형식 잘못됨, 코드: {}", ErrorCode.BAD_INPUT);
             throw new BaseException(ErrorCode.BAD_INPUT);
         }
         List<Universities> universitiesList = universitiesRepository.searchByUniversity(unvToSearch);
@@ -169,7 +143,6 @@ public class MemberService {
     public List<String> getMajorsList(String majorToSearch){
         if(majorToSearch.matches(".*[^가-힣\\sA-Z()].*")){
             //BAD_INPUT
-            memberServiceLogger.error("검색어로 전공 목록 불러오기 오류 : 입력 형식 잘못됨, 코드: {}", ErrorCode.BAD_INPUT);
             throw new BaseException(ErrorCode.BAD_INPUT);
         }
         List<Majors> majorsList = majorsRepository.searchByMajor(majorToSearch);
@@ -181,11 +154,8 @@ public class MemberService {
     }
 
     public UserinfoDTO getUserinfo(String token){
-        try {
-            jwtUtil.isExpired(token);
-        } catch (ExpiredJwtException e) {
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
             //EXPIRED_TOKEN
-            memberServiceLogger.error("회원 정보 조회 오류 : 토큰 만료됨, 코드: {}", ErrorCode.EXPIRED_TOKEN);
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
@@ -194,27 +164,40 @@ public class MemberService {
 
         if(Boolean.FALSE.equals(isUsernameExists)){
             //NO_USER_INFO
-            memberServiceLogger.error("회원 정보 조회 오류 : 유저 없음, 코드: {}", ErrorCode.NO_USER_INFO);
             throw new BaseException(ErrorCode.NO_USER_INFO);
         }
         Members foundMember = membersRepository.findByUsername(username);
 
-        List<String> majorIdList = new ArrayList<>(Arrays.asList(foundMember.getMajors().split(",")));
-        StringBuilder majorList = new StringBuilder();
-        for(String id : majorIdList){
-            majorList.append(majorsRepository.findByMajorId(id).getMajor());
-            majorList.append(", ");
+        String returnNickname = "닉네임을 설정하세요.";
+        if(foundMember.getNickname() != null){
+            returnNickname = foundMember.getNickname();
         }
-        if (!majorList.isEmpty()) {
-            majorList.setLength(majorList.length() - 2);
+
+        String returnUnv = "대학교를 설정하세요.";
+        if(foundMember.getUniversity() != null && foundMember.getUniversity() != -1L){
+            returnUnv = universitiesRepository.findByUnvId(foundMember.getUniversity()).getUniversity();
+        }
+
+        String returnMajors = "관심 전공을 설정하세요.";
+        StringBuilder majorList = new StringBuilder();
+        if(foundMember.getMajors()!= null){
+            List<String> majorIdList = new ArrayList<>(Arrays.asList(foundMember.getMajors().split(",")));
+            for(String id : majorIdList){
+                majorList.append(majorsRepository.findByMajorId(id).getMajor());
+                majorList.append(", ");
+            }
+            if (!majorList.isEmpty()) {
+                majorList.setLength(majorList.length() - 2);
+            }
+            returnMajors = majorList.toString();
         }
 
         return UserinfoDTO
                 .builder()
                 .username(foundMember.getUsername())
-                .nickname(foundMember.getNickname())
-                .university(universitiesRepository.findByUnvId(foundMember.getUniversity()).getUniversity())
-                .majors(majorList.toString())
+                .nickname(returnNickname)
+                .university(returnUnv)
+                .majors(returnMajors)
                 .build();
     }
 }

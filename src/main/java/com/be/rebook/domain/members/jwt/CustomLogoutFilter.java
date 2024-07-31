@@ -1,7 +1,6 @@
 package com.be.rebook.domain.members.jwt;
 
 import com.be.rebook.domain.members.repository.RefreshTokensRepository;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -61,9 +60,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        try {
-            jwtUtil.isExpired(refresh);
-        } catch (ExpiredJwtException e) {
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(refresh))){
             //EXPIRED_TOKEN
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;

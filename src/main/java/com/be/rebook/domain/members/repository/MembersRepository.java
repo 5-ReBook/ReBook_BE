@@ -8,7 +8,6 @@ public interface MembersRepository extends JpaRepository<Members, Long> {
 
     Boolean existsByUsername(String username);
 
-    //유저를 조회하는 메서드
     Members findByUsername(String username);
 
     Members findByMemberId(Long memberId);

@@ -7,8 +7,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,10 +28,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
 
-    //jwt 토큰을 사용해야하므로 주입
     private final JWTUtil jwtUtil;
-
-    private static final Logger loginFilterLogger = LoggerFactory.getLogger(LoginFilter.class);
 
     private final RefreshTokensRepository refreshTokensRepository;
     public LoginFilter(AuthenticationManager authenticationManager,
@@ -47,13 +42,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(
             HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException{
-        loginFilterLogger.info("로그인 시도 시작");
         String username = null;
         String password = null;
-
-        // 포스트맨 테스트용
-//        username = obtainUsername(request);
-//        password = obtainPassword(request)+username;
 
         // JSON 파싱 리액트
         if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
@@ -65,17 +55,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 username = requestMap.get("username");
                 password = requestMap.get("password")+username;
 
-                loginFilterLogger.info("attemptAuthentication username: {}", username);
-                loginFilterLogger.info("attemptAuthentication password: {}", password);
-
                 UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
                 return authenticationManager.authenticate(authRequest);
             } catch (IOException e) {
                 throw new AuthenticationServiceException("Error parsing JSON request", e);
             }
         }
-
-        loginFilterLogger.info("attemptAuthentication username : {}", username);
 
         UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(username,password,null);
@@ -101,8 +86,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         addRefreshEntity(username, refresh, 86400000L);
 
-        loginFilterLogger.info("successfulAuthentication current accessToken: {}", access);
-
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
@@ -113,20 +96,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletRequest request, HttpServletResponse response,
             AuthenticationException failed){
         //LOGIN_FAILED
-        loginFilterLogger.error("로그인 실패 코드 :{}", 401);
         response.setStatus(401);
     }
 
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        //한시간짜리
         cookie.setMaxAge(24*60*60);
-        //https에서만 되게 하는 옵션
-        //cookie.setSecure(true);
-        //쿠키가 적용될 범위
-        //cookie.setPath("/");
-        //자바스크립트로 해당 쿠키 접근 못하게 하는 옵션
+        //자바스크립트로 해당 쿠키 접근 못하게
         cookie.setHttpOnly(true);
 
         return cookie;
