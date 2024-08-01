@@ -27,7 +27,7 @@ public enum ErrorCode {
     /**
      * 상품 에러
      */
-    NOT_EXIST_POST(HttpStatus.NOT_FOUND,  "존재하지 않는 상품입니다."),
+    NOT_EXIST_PRODUCT(HttpStatus.NOT_FOUND,  "존재하지 않는 상품입니다."),
 
     /**
      * 채팅 에러
