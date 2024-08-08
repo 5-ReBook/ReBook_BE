@@ -9,6 +9,7 @@ import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,6 +118,7 @@ public class MemberService {
     //     return member;
     // }
 
+    @Transactional
     public List<String> getUniversitiesList(String unvToSearch){
         if(unvToSearch.matches(".*[^가-힣\\sA-Z()].*")){
             //BAD_INPUT
@@ -135,6 +137,7 @@ public class MemberService {
         return returnList;
     }
 
+    @Transactional
     public List<String> getMajorsList(String majorToSearch){
         if(majorToSearch.matches(".*[^가-힣\\sA-Z()].*")){
             //BAD_INPUT

@@ -34,7 +34,6 @@ public class AuthController {
         this.reissueService = reissueService;
     }
 
-    //이거 Members Entity 여기다가 생성해줘야됨?
     @PostMapping("/members/signup")
     public ResponseEntity<BaseResponse<Members>> joinProcess(@RequestBody JoinDTO joinDTO) {
         joinLogger.info(joinDTO.getUsername());
