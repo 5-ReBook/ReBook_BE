@@ -5,6 +5,7 @@ import com.be.rebook.auth.entity.RefreshTokens;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 import com.be.rebook.auth.jwt.JWTUtil;
+import com.be.rebook.auth.jwt.type.TokenCategory;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,11 +39,9 @@ public class ReissueService {
     public RefreshTokens reissueToken(HttpServletRequest request, HttpServletResponse response) {
         // get refresh token
         String refresh = null;
-        String refreshCategory = "refresh";
-        String accessCategory = "access";
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(refreshCategory)) {
+            if (cookie.getName().equals(TokenCategory.REFRESH.getName())) {
                 refresh = cookie.getValue();
             }
         }
@@ -58,9 +57,9 @@ public class ReissueService {
         }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
-        String category = jwtUtil.getCategory(refresh);
+        TokenCategory category = jwtUtil.getCategory(refresh);
 
-        if (!category.equals(refreshCategory)) {
+        if (category != TokenCategory.REFRESH) {
             //TOKEN_CATEGORY_INCORRECT
             throw new BaseException(ErrorCode.TOKEN_CATEGORY_INCORRECT);
         }
@@ -75,16 +74,16 @@ public class ReissueService {
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
 
-        String newAccess = jwtUtil.createJwt(accessCategory, username, role, 600000L);
-        String newRefresh = jwtUtil.createJwt(refreshCategory, username, role, 86400000L);
+        String newAccess = jwtUtil.createJwt(TokenCategory.ACCESS, username, role, 600000L);
+        String newRefresh = jwtUtil.createJwt(TokenCategory.REFRESH, username, role, 86400000L);
 
         //리프레쉬 토큰 저장 db에 기존의 리프레시 토큰 삭제 후 새 리프레시 토큰 저장
         refreshRepository.deleteByRefresh(refresh);
         addRefreshEntity(username,newRefresh,86400000L);
 
         // response
-        response.setHeader(accessCategory, newAccess);
-        response.addCookie(createCookie(refreshCategory, newRefresh));
+        response.setHeader(TokenCategory.ACCESS.getName(), newAccess);
+        response.addCookie(createCookie(TokenCategory.REFRESH.getName(), newRefresh));
         return RefreshTokens.builder().username(username).refresh(refresh).build();
     }
     private Cookie createCookie(String key, String value) {

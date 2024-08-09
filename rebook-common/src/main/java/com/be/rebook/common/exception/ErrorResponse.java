@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 @Getter
-@JsonPropertyOrder({"timestamp", "status", "error", "code", "message"})
+@JsonPropertyOrder({ "timestamp", "status", "error", "code", "message" })
 public class ErrorResponse {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -24,4 +24,10 @@ public class ErrorResponse {
         this.message = errorCode.getMessage();
     }
 
+    public ErrorResponse(ErrorCode errorCode, String message) {
+        this.status = errorCode.getStatus().value();
+        this.error = errorCode.getStatus().name();
+        this.code = errorCode.name();
+        this.message = message;
+    }
 }

@@ -25,4 +25,17 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET_KEY}
+  access-token-expiration: 3600000 # ms
+  refresh-token-expiration: 86400000 # ms
 
+# 추후에 S3 로직을 Common 모듈로 분리하고 지울것
+cloud:
+  aws:
+    s3:
+      bucket: rebookbucket
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: ${S3_ACCESS_KEY}
+      secretKey: ${S3_SECRET_KEY}
+      

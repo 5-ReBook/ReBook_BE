@@ -1,6 +1,5 @@
 package com.be.rebook.auth.dto;
 
-
 import com.be.rebook.auth.entity.Members;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,11 +10,15 @@ import java.util.Collection;
 public class CustomUserDetails implements UserDetails {
     private final Members members;
 
-    public CustomUserDetails(Members members){
+    public CustomUserDetails(Members members) {
         this.members = members;
     }
 
-    //역할 반환
+    public String getRoleName() {
+        return members.getRole();
+    }
+
+    // 역할 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collection = new ArrayList<>();
@@ -53,4 +56,3 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 }
-

@@ -49,27 +49,13 @@ public class ProductResponseDTO {
 
         private List<String> storeFileNameList;
 
-        private String nickname;
-
-        private Long university;
-
-        private String majors;
+        private Long sellerId;
 
         private String title;
 
         private String content;
 
         private int price;
-
-        private String isbn;
-
-        private String bookTitle;
-
-        private String author;
-
-        private String publisher;
-
-        private String publishDate;
 
         // 책 사용 대학
         private String bookUniversity;
@@ -84,17 +70,10 @@ public class ProductResponseDTO {
             this.storeFileNameList = product.getProductImages().stream()
                     .map(ProductImage::getStoreFileName)
                     .collect(Collectors.toList());
-            this.nickname = product.getSeller().getNickname();
-            this.university = product.getSeller().getUniversity();
-            this.majors = product.getSeller().getMajors();
+            this.sellerId = product.getSellerId();
             this.title = product.getTitle();
             this.content = product.getContent();
             this.price = product.getPrice();
-            this.isbn = product.getIsbn();
-            this.bookTitle = product.getBookTitle();
-            this.author = product.getAuthor();
-            this.publisher = product.getPublisher();
-            this.publishDate = product.getPublishDate();
             this.bookUniversity = product.getUniversity();
             this.bookMajor = product.getMajor();
             this.status = product.getStatus();

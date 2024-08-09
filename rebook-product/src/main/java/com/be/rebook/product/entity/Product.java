@@ -1,6 +1,5 @@
 package com.be.rebook.product.entity;
 
-import com.be.rebook.product.entity.Members;
 import com.be.rebook.product.dto.ProductRequestDTO;
 import com.be.rebook.product.type.ProductStatus;
 import com.be.rebook.common.config.BaseEntity;
@@ -28,16 +27,6 @@ public class Product extends BaseEntity {
 
     private int price;
 
-    private String isbn;
-
-    private String bookTitle;
-
-    private String author;
-
-    private String publisher;
-
-    private String publishDate;
-
     private String university;
 
     private String major;
@@ -45,27 +34,20 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id")
-    private Members seller;
+    private Long sellerId;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> productImages = new ArrayList<>();
 
-    public static Product of(Members member, ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO) {
+    public static Product of(Long sellerId, ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO) {
         return builder()
                 .title(productSaveRequestDTO.getTitle())
                 .content(productSaveRequestDTO.getContent())
                 .price(productSaveRequestDTO.getPrice())
-                .isbn(productSaveRequestDTO.getIsbn())
-                .bookTitle(productSaveRequestDTO.getBookTitle())
-                .author(productSaveRequestDTO.getAuthor())
-                .publisher(productSaveRequestDTO.getPublisher())
-                .publishDate(productSaveRequestDTO.getPublishDate())
                 .university(productSaveRequestDTO.getUniversity())
                 .major(productSaveRequestDTO.getMajor())
                 .status(ProductStatus.PENDING)
-                .seller(member)
+                .sellerId(sellerId)
                 .build();
     }
 

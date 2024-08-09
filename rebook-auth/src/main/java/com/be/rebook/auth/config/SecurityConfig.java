@@ -67,9 +67,7 @@ public class SecurityConfig {
         );
 
         http.csrf(auth->auth.disable());
-
         http.formLogin(auth->auth.disable());
-
         http.httpBasic(auth->auth.disable());
 
         http.authorizeHttpRequests(auth-> auth
@@ -78,13 +76,12 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
         );
-        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
+        http.addFilterAfter(new JWTFilter(jwtUtil), LoginFilter.class);
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)
                         , jwtUtil
                         , refreshTokensRepository)
                 , UsernamePasswordAuthenticationFilter.class);
-
         http.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokensRepository), LogoutFilter.class);
 
         http.sessionManagement(session->session

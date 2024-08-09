@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @JsonPropertyOrder({"time", "status", "code", "message", "result"})
-public class BaseResponse<T> {
+public class BaseResponse<T> { //TODO : extends ResponseEntity<BaseResponse<T>> 로 변경??????
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private final LocalDateTime time = LocalDateTime.now();

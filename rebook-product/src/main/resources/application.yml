@@ -12,6 +12,17 @@ spring:
       max-file-size: 30MB
       resolve-lazily: true
 
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
 # 추후에 S3 로직을 Common 모듈로 분리하고 지울것
 cloud:
   aws:

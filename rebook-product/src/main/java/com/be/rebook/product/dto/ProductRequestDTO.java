@@ -16,16 +16,6 @@ public class ProductRequestDTO {
 
         private int price;
 
-        private String isbn;
-
-        private String bookTitle;
-
-        private String author;
-
-        private String publisher;
-
-        private String publishDate;
-
         private String university;
 
         private String major;

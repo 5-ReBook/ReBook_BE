@@ -1,7 +1,7 @@
 package com.be.rebook.product.controller;
 
-import com.be.rebook.product.service.ProductService;
 import com.be.rebook.common.config.BaseResponse;
+import com.be.rebook.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +55,7 @@ public class ProductController {
      */
     @GetMapping("/members/{memberId}/products")
     public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findProductsByMember(@PathVariable("memberId") Long memberId) {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllProductByMember(memberId)));
+        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllProductBySellerId(memberId)));
     }
 
     /**
@@ -70,7 +70,8 @@ public class ProductController {
      * 상품 상태 변경
      */
     @PatchMapping("/{productId}")
-    public ResponseEntity<BaseResponse<Long>> changeProductStatus(@PathVariable("productId") Long productId, @RequestBody ProductStatusRequestDTO productStatusRequestDTO) {
+    public ResponseEntity<BaseResponse<Long>> changeProductStatus(@PathVariable("productId") Long productId,
+                                                                  @RequestBody ProductStatusRequestDTO productStatusRequestDTO) {
         return ResponseEntity.ok().body(new BaseResponse<>(productService.changeStatus(productId, productStatusRequestDTO.getStatus())));
     }
 
