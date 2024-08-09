@@ -9,6 +9,11 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     /**
+     * 인증 에러
+     */
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증에 실패했습니다."),
+
+    /**
      * 멤버 에러
      */
     LOGIN_FAILED(HttpStatus.BAD_REQUEST, "사용자 로그인에 실패했습니다."),

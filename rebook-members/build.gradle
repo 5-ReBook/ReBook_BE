@@ -15,5 +15,10 @@ jar {
 
 dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Eureka Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+
     implementation project(":rebook-common")
 }

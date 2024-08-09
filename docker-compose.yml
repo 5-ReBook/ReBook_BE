@@ -13,6 +13,14 @@ services:
       - "443:443"
       - "80:80"
 
+  be-eureka-server:
+    restart: always
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+
   be-rebook-auth:
     restart: always
     build:

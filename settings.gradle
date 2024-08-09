@@ -3,4 +3,4 @@ include 'rebook-members'
 include 'rebook-auth'
 include 'rebook-common'
 include 'rebook-product'
-
+include 'eureka-server'

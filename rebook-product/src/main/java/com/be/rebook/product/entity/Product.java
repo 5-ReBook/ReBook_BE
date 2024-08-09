@@ -1,6 +1,5 @@
 package com.be.rebook.product.entity;
 
-import com.be.rebook.product.entity.Members;
 import com.be.rebook.product.dto.ProductRequestDTO;
 import com.be.rebook.product.type.ProductStatus;
 import com.be.rebook.common.config.BaseEntity;

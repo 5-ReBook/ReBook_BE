@@ -1,10 +1,13 @@
 spring:
+  application:
+    name: rebook-auth
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${MYSQL_DB_HOST}:3306/${MYSQL_DB_NAME}?serverTimezone=UTC&characterEncoding=UTF-8
     username: ${MYSQL_DB_USERNAME}
     password: ${MYSQL_DB_PASSWORD}
-    
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -25,4 +28,25 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET_KEY}
+  access-token-expiration: 3600000 # ms
+  refresh-token-expiration: 86400000 # ms
 
+# Eureka Client 설정
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL}
+  # instance: # IP 주소로 등록시 활성화
+  #   hostname: 0.0.0.0
+  #   preferIpAddress: true
+
+# 추후에 S3 로직을 Common 모듈로 분리하고 지울것
+cloud:
+  aws:
+    s3:
+      bucket: rebookbucket
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: ${S3_ACCESS_KEY}
+      secretKey: ${S3_SECRET_KEY}

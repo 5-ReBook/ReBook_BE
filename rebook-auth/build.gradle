@@ -21,7 +21,12 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
+    // 보안 의존성
     implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Eureka Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    
     testImplementation 'org.springframework.security:spring-security-test'
 
     // 공통모듈
