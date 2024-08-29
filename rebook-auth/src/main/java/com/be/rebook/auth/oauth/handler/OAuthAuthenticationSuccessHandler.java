@@ -27,7 +27,7 @@ public class OAuthAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
     private final CookieUtil cookieUtil;
 
     public OAuthAuthenticationSuccessHandler(@Value("${info.web.oauth.targetUrl}") String targetUrl, JWTUtil jwtUtil,
-            CookieUtil cookieUtil) {
+                                             CookieUtil cookieUtil) {
         this.targetUrl = targetUrl;
         this.jwtUtil = jwtUtil;
         this.cookieUtil = cookieUtil;
@@ -36,7 +36,7 @@ public class OAuthAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
     @Transactional
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException {
+                                        Authentication authentication) throws IOException {
 
         if (response.isCommitted()) {
             logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
@@ -50,7 +50,7 @@ public class OAuthAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
 
     @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) {
+                                        Authentication authentication) {
         String username = authentication.getName();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -64,7 +64,7 @@ public class OAuthAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
 
         jwtUtil.saveRefreshToken(username, refresh);
 
-        response.setHeader("Authorization", access);
+        response.setHeader(TokenCategory.ACCESS.getName(), access);
         cookieUtil.createCookie(TokenCategory.REFRESH.getName(), refresh,
                 TokenCategory.REFRESH.getExpiry().intValue() / 1000, response);
         response.setStatus(HttpStatus.OK.value());

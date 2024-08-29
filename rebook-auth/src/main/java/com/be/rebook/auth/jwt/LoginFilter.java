@@ -32,8 +32,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final CookieUtil cookieUtil;
 
     public LoginFilter(AuthenticationManager authenticationManager,
-            JWTUtil jwtUtil,
-            CookieUtil cookieUtil) {
+                       JWTUtil jwtUtil,
+                       CookieUtil cookieUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.cookieUtil = cookieUtil;
@@ -92,7 +92,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         jwtUtil.saveRefreshToken(username, refresh);
 
-        response.setHeader("Authorization", access);
+        response.setHeader(TokenCategory.ACCESS.getName(), access);
         cookieUtil.createCookie(TokenCategory.REFRESH.getName(), refresh,
                 TokenCategory.REFRESH.getExpiry().intValue() / 1000, response);
         response.setStatus(HttpStatus.OK.value());

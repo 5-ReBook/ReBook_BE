@@ -39,8 +39,8 @@ public class AuthController {
     private final CookieUtil cookieUtil;
 
     public AuthController(SignupService signupService,
-            ReissueService reissueService,
-            CookieUtil cookieUtil) {
+                          ReissueService reissueService,
+                          CookieUtil cookieUtil) {
         this.signupService = signupService;
         this.reissueService = reissueService;
         this.cookieUtil = cookieUtil;
@@ -48,14 +48,14 @@ public class AuthController {
 
     @PostMapping("/members/signup")
     public ResponseEntity<BaseResponse<Members>> signupProcess(HttpServletRequest request,
-            @Valid @RequestBody BasicUserInfoDTO basicUserInfoDTO) {
+                                                               @Valid @RequestBody BasicUserInfoDTO basicUserInfoDTO) {
         signupLogger.info(basicUserInfoDTO.getUsername());
         return ResponseEntity.ok().body(new BaseResponse<>(signupService.signupProcess(request, basicUserInfoDTO)));
     }
 
     @PostMapping("/members/refreshtoken/reissue")
     public ResponseEntity<BaseResponse<TokenDto>> reissueRefreshToken(HttpServletRequest request,
-            HttpServletResponse response) {
+                                                                      HttpServletResponse response) {
 
         Cookie refreshTokenCookie = cookieUtil.findCookieFromRequest(TokenCategory.REFRESH.getName(), request);
         if (refreshTokenCookie == null) {
@@ -64,8 +64,7 @@ public class AuthController {
 
         TokenDto newToken = reissueService.reissueToken(refreshTokenCookie.getValue());
 
-//        response.setHeader(TokenCategory.ACCESS.getName(), newToken.getAccessToken());
-        response.setHeader("Authorization", newToken.getAccessToken());
+        response.setHeader(TokenCategory.ACCESS.getName(), newToken.getAccessToken());
         cookieUtil
                 .createCookie(TokenCategory.REFRESH.getName(),
                         newToken.getRefreshToken(),
@@ -81,7 +80,7 @@ public class AuthController {
 
     @PostMapping("/members/signup/verify")
     public ResponseEntity<BaseResponse<Members>> codeMatch(HttpServletResponse response,
-            @Valid @RequestBody VerifyDTO verifyDTO) {
+                                                           @Valid @RequestBody VerifyDTO verifyDTO) {
         return ResponseEntity.ok().body(new BaseResponse<>(signupService.verifyCode(verifyDTO, response)));
     }
 
@@ -102,7 +101,7 @@ public class AuthController {
 
     @PatchMapping("/members/password/reset")
     public ResponseEntity<BaseResponse<Members>> resetUserPassword(HttpServletRequest request,
-            @Valid @RequestBody BasicUserInfoDTO resetPasswordDTO) {
+                                                                   @Valid @RequestBody BasicUserInfoDTO resetPasswordDTO) {
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(reissueService.reissueUserPassword(request, resetPasswordDTO)));
     }
@@ -110,7 +109,7 @@ public class AuthController {
     // 로그인 이후 마이페이지에서 바로 비밀번호 변경이라 이메일 인증 필요없음
     @PatchMapping("/members/password")
     public ResponseEntity<BaseResponse<Members>> updateUserPassword(HttpServletRequest request,
-            @Valid @RequestBody UpdatePasswordDTO passwordDTO) {
+                                                                    @Valid @RequestBody UpdatePasswordDTO passwordDTO) {
         String passwordToUpdate = passwordDTO.getPassword();
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(reissueService.updateUserPassword(request, passwordToUpdate)));
