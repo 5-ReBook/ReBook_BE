@@ -1,3 +1,5 @@
+server:
+  port: 5173
 spring:
   application:
     name: rebook-auth

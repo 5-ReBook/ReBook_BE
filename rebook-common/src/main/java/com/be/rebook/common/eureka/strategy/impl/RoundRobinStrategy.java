@@ -12,7 +12,10 @@ public class RoundRobinStrategy implements InstanceSelectionStrategy {
 
     @Override
     public ServiceInstance selectInstance(List<ServiceInstance> instances) {
-        int pos = Math.abs(position.getAndIncrement() % instances.size());
-        return instances.get(pos);
+        if (instances.size() > 0) {
+            int pos = Math.abs(position.getAndIncrement() % instances.size());
+            return instances.get(pos);
+        }
+        return null;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.UnknownContentTypeException;
 
 import com.be.rebook.chat.dto.ChatMessageDTO;
 import com.be.rebook.chat.dto.ChatRoomDto;
@@ -15,9 +16,11 @@ import com.be.rebook.chat.service.ChatService;
 import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
+import com.be.rebook.common.dto.InternalAdviceDTO.InternalAdviceRequestDTO;
+import com.be.rebook.common.dto.InternalAdviceDTO.InternalAdviceResponseDTO;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
-
+import com.be.rebook.common.restclients.AIServiceRestClient;
 import com.be.rebook.common.restclients.RestClientFactory;
 
 import jakarta.validation.constraints.NotNull;
@@ -36,6 +39,25 @@ public class ChatController {
     private final ChatService chatService;
 
     private final RestClientFactory restClientFactory;
+
+    @GetMapping("/test")
+    public String test() {
+        InternalAdviceRequestDTO requestDTO = new InternalAdviceRequestDTO(1L, 1L, "110-437-303283");
+
+        AIServiceRestClient client = restClientFactory.createAIServiceRestClient(null);
+        InternalAdviceResponseDTO res;
+        try {
+            res = client.predictMessage(requestDTO);
+            // 응답 처리 로직
+        } catch (UnknownContentTypeException ex) {
+            // HTML이나 예상치 못한 응답이 왔을 때 처리하는 로직
+            System.err.println("Unexpected content type: " + ex.getResponseBodyAsString());
+            throw new RuntimeException("Failed to parse response from AI service", ex);
+        }
+
+        System.out.println(res.toString());
+        return res.toString();
+    }
 
     @GetMapping("/rooms/{roomId}/messages")
     public ResponseEntity<BaseResponse<List<ChatMessageDTO>>> getChatRoomHistory(

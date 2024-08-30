@@ -50,8 +50,6 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                 return null;
             }
 
-            System.out.println(LocalDateTime.now());
-
             if (res.getStatusCode().is2xxSuccessful()) {
                 BaseResponse<MemberLoginInfo> baseResponse = res.getBody();
 

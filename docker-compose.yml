@@ -20,6 +20,8 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
+    ports:
+      - "8761:8761"
 
   be-rebook-auth:
     restart: always
@@ -52,6 +54,12 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
+
+  rebook-ai:
+    restart: always
+    build:
+      context: ../ReBook_AI
+      dockerfile: Dockerfile
 
   redis:
     image: redis:latest

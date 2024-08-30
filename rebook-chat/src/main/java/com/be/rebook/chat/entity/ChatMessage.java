@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,6 +36,9 @@ public class ChatMessage extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
+
+    @OneToOne(mappedBy = "chatMessage") // Advice 엔티티의 chatMessage 필드에 의해 매핑됨
+    private ChatAdvice advice;
 
     public void setIsRead(Boolean isRead) {
         this.isRead = isRead;

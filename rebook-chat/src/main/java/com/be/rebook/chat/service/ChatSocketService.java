@@ -26,9 +26,8 @@ public class ChatSocketService {
     // 채팅방 DB 레포지터리
     private final ChatService chatService;
 
-    // Redis
-    private static final String CHAT_ROOMS = "CHAT_ROOM";
-    private final RedisTemplate<String, Object> redisTemplate;
+    // AI advice 서비스
+    private final ChatAdviceService chatAdviceService;
 
     // Topic을 추적하기 위한 Map<채팅방ID, Topic>
     // 메모리에 부담이 갈 수 있음.
@@ -49,6 +48,8 @@ public class ChatSocketService {
     @Transactional
     public void sendMessage(ChatMessageDTO message) {
         message = chatService.addMessageToChatRoom(message);
+
+        chatAdviceService.generateAdvice(message);
 
         // 채팅방에 발행된 메시지를 전송한다.
         ChannelTopic topic = new ChannelTopic(message.getRoomId().toString());
